@@ -1,5 +1,13 @@
 残疾人等级计算库
 
+```
+npm i disabled-assess-clac
+```
+
+```
+yarn add disabled-assess-clac
+```
+
 hearingCalc 听力计算
 
 visionCalc 视力计算
