@@ -1,6 +1,6 @@
 {
   "name": "disabled-assess-clac",
-  "version": "0.2.2",
+  "version": "1.0.0",
   "description": "",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
