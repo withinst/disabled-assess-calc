@@ -1,11 +1,11 @@
 残疾人等级计算库
 
 ```
-npm i disabled-assess-clac
+npm i disabled-assess-calc
 ```
 
 ```
-yarn add disabled-assess-clac
+yarn add disabled-assess-calc
 ```
 
 hearingCalc 听力计算
