@@ -104,6 +104,13 @@ describe('七岁以上情况', () => {
     expect(retData.level).toBe('2')
   })
 
+  test('数字精度0.29', () => {
+    const retData = testVisionCalc({
+      isGetVisionL: true,
+      visionL: 0.29
+    })
+    expect(retData.data.visionL).toBe(0.29)
+  })
 })
 
 

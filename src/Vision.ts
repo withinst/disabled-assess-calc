@@ -97,7 +97,7 @@ const visionCheck = (v: number | string): number | '' => {
     return ''
   }
   const ret = Math.max(Math.min(parseFloat(value + ''), 9.99), 0)
-  return parseFloat((parseInt(ret * 100 + '', 10) / 100).toFixed(2))
+  return parseFloat(ret.toFixed(2))
 }
 
 /***
