@@ -2,13 +2,18 @@
 import { CommonOption, RetType } from './CommonType'
 import { dictLabel } from './utils'
 
+export type BodyMuscle = '1' | '2' | '3' | '4' | '5' | ''
 export type BodyForm = {
   representationType: string
+  recoverPeriod?: string
+  muscleStrength?: BodyMuscle
+  muscleTension?: BodyMuscle
 }
 
 export function bodyCalc(
   formData: BodyForm,
-  representationType: CommonOption[]
+  representationType: CommonOption[],
+  recoverList?: CommonOption[]
 ): RetType<BodyForm> {
   const ret: RetType<BodyForm> = {
     data: { ...formData },
@@ -18,7 +23,16 @@ export function bodyCalc(
   }
   const value = parseInt(ret.data.representationType, 10)
   const selectLabel = dictLabel(representationType, ret.data.representationType)
-  ret.hint = `其残疾表征测试结果为${selectLabel}`
+  let recoverHint = ''
+  if ('recoverPeriod' in formData && recoverList) {
+    const recoverLabel = dictLabel(recoverList, ret.data.recoverPeriod || '')
+    recoverHint = `其康复期为${recoverLabel}`
+  }
+  ret.hint = `其残疾表征测试结果为${selectLabel}${
+    formData.muscleStrength ? `,肌力测试结果为${formData.muscleStrength}` : ''
+  }${
+    formData.muscleTension ? `,肌张力测试结果为${formData.muscleTension}` : ''
+  }${recoverHint ? ',' + recoverHint : recoverHint}`
   if (0 < value && value <= 9) {
     ret.level = '1'
   } else if (9 < value && value <= 16) {
