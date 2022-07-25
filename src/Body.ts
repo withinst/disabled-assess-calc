@@ -26,13 +26,18 @@ export function bodyCalc(
   let recoverHint = ''
   if ('recoverPeriod' in formData && recoverList) {
     const recoverLabel = dictLabel(recoverList, ret.data.recoverPeriod || '')
-    recoverHint = `其康复期为${recoverLabel}`
+    recoverHint = `康复期为${recoverLabel}`
   }
-  ret.hint = `其残疾表征测试结果为${selectLabel}${
-    formData.muscleStrength ? `,肌力测试结果为${formData.muscleStrength}` : ''
-  }${
-    formData.muscleTension ? `,肌张力测试结果为${formData.muscleTension}` : ''
-  }${recoverHint ? ',' + recoverHint : recoverHint}`
+  const muscleStrength = formData.muscleStrength
+    ? `肌力为${formData.muscleStrength}`
+    : ''
+  const muscleTension = formData.muscleTension
+    ? `肌张力为${formData.muscleTension}`
+    : ''
+  const str = [recoverHint, muscleTension, muscleStrength]
+    .filter((s) => s !== '')
+    .join(',')
+  ret.hint = `其残疾表征测试结果为${selectLabel}${str ? `,${str}` : str}`
   if (0 < value && value <= 9) {
     ret.level = '1'
   } else if (9 < value && value <= 16) {
