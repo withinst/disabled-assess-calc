@@ -24,8 +24,8 @@ export function bodyCalc(
   const value = parseInt(ret.data.representationType, 10)
   const selectLabel = dictLabel(representationType, ret.data.representationType)
   let recoverHint = ''
-  if ('recoverPeriod' in formData && recoverList) {
-    const recoverLabel = dictLabel(recoverList, ret.data.recoverPeriod || '')
+  if (formData.recoverPeriod && recoverList) {
+    const recoverLabel = dictLabel(recoverList, formData.recoverPeriod)
     recoverHint = `康复期为${recoverLabel}`
   }
   const muscleStrength = formData.muscleStrength
