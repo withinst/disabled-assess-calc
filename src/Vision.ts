@@ -169,7 +169,14 @@ const getEyeLevel = (
     // 视力和视野取残疾等级较重一级
     return {
       level: Math.min(visionLevel, viewLevel),
-      situation: visionLevel <= viewLevel ? 1 : 2,
+      situation:
+        visionLevel === 5 && viewLevel === 5
+          ? typeof vision === 'number'
+            ? 1
+            : 2
+          : visionLevel <= viewLevel
+          ? 1
+          : 2,
     }
   }
 }

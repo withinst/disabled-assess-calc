@@ -111,6 +111,15 @@ describe('七岁以上情况', () => {
     })
     expect(retData.data.visionL).toBe(0.29)
   })
+
+  test('视野和视力都不符合但是视野有值，视力无值', () => {
+    const retData = testVisionCalc({
+      isGetVisionL: true,
+      visionL: '',
+      viewL: 10
+    })
+    expect(retData.hint).toEqual('其较好眼左眼视野测试结果为10')
+  })
 })
 
 
