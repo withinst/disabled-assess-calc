@@ -1,5 +1,5 @@
 // 视力计算
-import { RetType } from './CommonType'
+import { CommonOption, RetType } from './CommonType'
 import { isEmptyOrNull, numberRange, toFloat } from './utils'
 
 export type VisionForm = {
@@ -17,7 +17,8 @@ export type VisionForm = {
 
 export function visionCalc(
   formData: VisionForm,
-  age: number
+  age: number,
+  options?: CommonOption[]
 ): RetType<VisionForm> {
   const ret: RetType<VisionForm> = {
     data: { ...formData },
@@ -88,7 +89,7 @@ export function visionCalc(
       )
     }
   }
-  return levelCalc(ret, age)
+  return levelCalc(ret, age, options || [])
 }
 
 const visionCheck = (v: number | string): number | '' => {
@@ -175,14 +176,27 @@ const getEyeLevel = (
 
 const levelCalc = (
   ret: RetType<VisionForm>,
-  age: number
+  age: number,
+  options: CommonOption[]
 ): RetType<VisionForm> => {
   ret.hint = ''
   const isNoVision =
     (ret.data.isGetVisionR === 0 || ret.data.isGetVisionR === false) &&
     (ret.data.isGetVisionL === 0 || ret.data.isGetVisionL === false)
   if (isNoVision) {
-    ret.hint = '其左右眼都无法得到视力值'
+    const leftText = noVisionHint(
+      'left',
+      ret.data.noVisionLType,
+      ret.data.recognitionDistanceL,
+      options
+    )
+    const rightText = noVisionHint(
+      'right',
+      ret.data.noVisionRType,
+      ret.data.recognitionDistanceR,
+      options
+    )
+    ret.hint = `其左右眼都无法得到视力值(${leftText};${rightText})`
     ret.level = '1'
     return ret
   }
@@ -216,14 +230,47 @@ const levelCalc = (
   const anotherSide = isLeft ? rightLevel : leftLevel
   const situation = betterSide.situation || anotherSide.situation
   const side = situation === betterSide.situation && isLeft ? 'left' : 'right'
-  ret.hint =
-    situation === 1
-      ? `其较好眼矫正视力测试结果为${
-          side === 'left' ? ret.data.visionL : ret.data.visionR
-        }`
-      : `其较好眼视野测试结果为${
-          side === 'left' ? ret.data.viewL : ret.data.viewR
-        }`
+  const whichSide = side === 'left' ? '左眼' : '右眼'
+  const anotherSideIsGetVision =
+    side === 'left' ? ret.data.isGetVisionR : ret.data.isGetVisionL
+  // 另一边是否有视力
+  const anotherSideNotHasVision =
+    anotherSideIsGetVision === 0 || anotherSideIsGetVision === false
+  // 另一边无视里状况
+  const noVisionType =
+    side === 'left' ? ret.data.noVisionRType : ret.data.noVisionLType
+  // 另一边辨认距离
+  const distance =
+    side === 'left'
+      ? ret.data.recognitionDistanceR
+      : ret.data.recognitionDistanceL
+  if (situation === 1) {
+    const vision = side === 'left' ? ret.data.visionL : ret.data.visionR
+    ret.hint = `其较好眼${whichSide}矫正视力测试结果为${vision}`
+  } else {
+    const view = side === 'left' ? ret.data.viewL : ret.data.viewR
+    ret.hint = `其较好眼${whichSide}视野测试结果为${view}`
+  }
+  if (anotherSideNotHasVision) {
+    ret.hint += `(${noVisionHint(
+      side === 'left' ? 'right' : 'left',
+      noVisionType,
+      distance,
+      options
+    )})`
+  }
   ret.level = `${betterSide.level}`
   return ret
+}
+
+export const noVisionHint = (
+  side: 'left' | 'right',
+  noVisionType: string,
+  distance: number | '',
+  options: CommonOption[]
+): string => {
+  const noVisionTypeText = options.find((o) => o.value === noVisionType)?.label
+  const otherSideText = side === 'left' ? '左眼' : '右眼'
+  const unit = noVisionType === '1' || noVisionType === '2' ? '米' : '厘米'
+  return `${otherSideText}无视力数值情况为${noVisionTypeText},${otherSideText}最远辨认距离为${distance}${unit}`
 }
