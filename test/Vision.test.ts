@@ -120,6 +120,15 @@ describe('七岁以上情况', () => {
     })
     expect(retData.hint).toEqual('其较好眼左眼视野测试结果为10')
   })
+  test('左边视野和右边视野相同等级，但是左边视野值低于右边视野', () => {
+    const retData = testVisionCalc({
+      isGetVisionL: true,
+      isGetVisionR: true,
+      viewL: 6,
+      viewR: 8
+    })
+    expect(retData.hint).toEqual('其较好眼右眼视野测试结果为8')
+  })
 })
 
 

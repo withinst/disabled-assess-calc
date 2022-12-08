@@ -114,7 +114,7 @@ const getEyeLevel = (
   vision: number | '',
   view: number | '',
   age: number
-): { level: number; situation: 0 | 1 | 2 } => {
+): { level: number; situation: 0 | 1 | 2; value: number } => {
   // 矫正视力小于 0.02一级残疾, 小于 0.05 二级残疾, 小于 0.1 三级残疾， 小于0.3四级残疾，
   // 大于等于0.3 不符合残疾标准
   const getVisionLevel = (v: number) =>
@@ -126,6 +126,7 @@ const getEyeLevel = (
     return {
       level: 0,
       situation: 0,
+      value: 0,
     }
   }
   // 没有得到视力一级残疾
@@ -133,6 +134,7 @@ const getEyeLevel = (
     return {
       level: 1,
       situation: 0,
+      value: 0,
     }
   }
   // 七岁及以下以视力为准
@@ -142,11 +144,13 @@ const getEyeLevel = (
       return {
         level: 0,
         situation: 0,
+        value: 0,
       }
     }
     return {
       level: getVisionLevel(vision),
       situation: 1,
+      value: vision,
     }
   } else {
     // 七岁以上
@@ -155,6 +159,7 @@ const getEyeLevel = (
       return {
         level: 0,
         situation: 0,
+        value: 0,
       }
     }
     let visionLevel = 5
@@ -169,6 +174,14 @@ const getEyeLevel = (
     // 视力和视野取残疾等级较重一级
     return {
       level: Math.min(visionLevel, viewLevel),
+      value:
+        visionLevel === 5 && viewLevel === 5
+          ? typeof vision === 'number'
+            ? vision
+            : view || 0
+          : visionLevel <= viewLevel
+          ? vision || 0
+          : view || 0,
       situation:
         visionLevel === 5 && viewLevel === 5
           ? typeof vision === 'number'
@@ -232,7 +245,10 @@ const levelCalc = (
     age
   )
   // 左眼更好还是右眼更好
-  const isLeft = leftLevel.level >= rightLevel.level
+  const isLeft =
+    leftLevel.level === rightLevel.level
+      ? leftLevel.value >= rightLevel.value
+      : leftLevel.level > rightLevel.level
   const betterSide = isLeft ? leftLevel : rightLevel
   const anotherSide = isLeft ? rightLevel : leftLevel
   const situation = betterSide.situation || anotherSide.situation
